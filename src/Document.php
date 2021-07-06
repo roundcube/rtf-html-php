@@ -35,7 +35,7 @@ class Document
    * (Helper method)
    * Is the current character a letter?
    */
-  protected function is_letter(): bool
+  protected function is_letter()
   {
     if(ord($this->char) >= 65 && ord($this->char) <= 90) return true;
     if(ord($this->char) >= 97 && ord($this->char) <= 122) return true;
@@ -46,7 +46,7 @@ class Document
    * (Helper method)
    * Is the current character a digit?
    */
-  protected function is_digit(): bool
+  protected function is_digit()
   {
     return (ord($this->char) >= 48 && ord($this->char) <= 57);
   }

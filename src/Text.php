@@ -17,5 +17,5 @@ class Text extends Element
   public function toString(int $level)
   {
     return str_repeat("  ", $level) . "TEXT {$this->text}\n";
-  }    
+  }
 }

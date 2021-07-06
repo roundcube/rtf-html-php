@@ -20,7 +20,7 @@ class Group extends Element
   {
     // No children? Then the group type is null.
     if(sizeof($this->children) == 0) return null;
-    
+
     // If the first child is a control word, then
     // the group type is the word.
     $child = $this->children[0];
@@ -31,11 +31,11 @@ class Group extends Element
     elseif ($child instanceof ControlSymbol) {
       return ($child->symbol == '*') ? '*' : null;
     }
-    
+
     // If first child is neither word nor symbol, then
     // group type is null.
     return null;
-  }    
+  }
 
   // If a group contains a * symbol as its first child,
   // then it is a destination group.

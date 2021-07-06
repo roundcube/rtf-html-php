@@ -8,8 +8,8 @@ class Font
   public $name;
   public $charset;
   public $codepage;
-  
-  public function toStyle(): string {
+
+  public function toStyle() {
     $list = array();
     if($this->name) array_push($list, $this->name);
     if($this->family) array_push($list, $this->family);

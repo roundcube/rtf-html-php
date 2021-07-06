@@ -10,5 +10,5 @@ class ControlSymbol extends Element
   public function toString(int $level)
   {
     return str_repeat("  ", $level) . "SYMBOL {$this->symbol} ({$this->parameter})\n";
-  }    
+  }
 }
