@@ -292,7 +292,7 @@ class Document
   /*
    * Attempt to parse an RTF string.
    */
-  protected function Parse(\string $rtf)
+  protected function Parse(string $rtf)
   {
     $this->rtf = $rtf;
     $this->pos = 0;
