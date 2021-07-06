@@ -17,5 +17,5 @@ final class BulletsTest extends TestCase
       '<p><span style="font-family:Symbol;">&#183;&nbsp;</span><span style="font-family:Calibri;font-size:15px;">A</span></p><p><span style="font-family:Symbol;font-size:15px;">&#183;&nbsp;</span><span style="font-family:Calibri;font-size:15px;">B</span></p><p><span style="font-family:Symbol;font-size:15px;">&#183;&nbsp;</span><span style="font-family:Calibri;font-size:15px;">C</span></p>',
       $html
     );
-  }  
+  }
 }

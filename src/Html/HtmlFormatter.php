@@ -48,11 +48,14 @@ class HtmlFormatter
     // Begin format
     $this->ProcessGroup($document->root);
     // Instead of removing opened tags, we close them
-      $append = $this->openedTags['span'] ? '</span>' : '';
-      $append .= $this->openedTags['p'] ? '</p>' : '';
+    $this->output .= $this->openedTags['span'] ? '</span>' : '';
+    $this->output .= $this->openedTags['p'] ? '</p>' : '';
 
-      return $this->output . $append;
+    // Remove extra empty paragraph
+    // TODO: Find the real reason it's there and fix it
+    $this->output = preg_replace('|<p></p>$|', '', $this->output);
 
+    return $this->output;
   }
 
   protected function LoadFont(\RtfHtmlPhp\Group $fontGroup) {
@@ -372,7 +375,7 @@ class HtmlFormatter
     $utf8 = '';
 
     if ($srcEnc != 'UTF-8') { // convert character to Unicode
-      $utf8 = iconv($srcEnc, 'UTF-8', chr($code));
+      $utf8 = mb_convert_encoding(chr($code), 'UTF-8', $srcEnc);
     }
 
     if ($this->encoding == 'HTML-ENTITIES') {
