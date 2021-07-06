@@ -6,14 +6,14 @@ use RtfHtmlPhp\Html\HtmlFormatter;
 
 final class ParseSimpleTest extends TestCase
 {
-  public function testParseSimple(): void
+  public function testParseSimple()
   {
     $rtf = file_get_contents("tests/rtf/hello-world.rtf");
     $document = new Document($rtf);
     $this->assertTrue(true);
   }
 
-  public function testParseSimpleHtml(): void
+  public function testParseSimpleHtml()
   {
     $rtf = file_get_contents("tests/rtf/hello-world.rtf");
     $document = new Document($rtf);

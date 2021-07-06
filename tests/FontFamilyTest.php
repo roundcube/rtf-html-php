@@ -6,7 +6,7 @@ use RtfHtmlPhp\Html\HtmlFormatter;
 
 final class FontFamilyTestTest extends TestCase
 {
-  public function testParseFontFamilyHtml(): void
+  public function testParseFontFamilyHtml()
   {
     $rtf = file_get_contents("tests/rtf/fonts.rtf");
     $document = new Document($rtf);

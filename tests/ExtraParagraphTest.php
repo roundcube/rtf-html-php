@@ -6,7 +6,7 @@ use RtfHtmlPhp\Html\HtmlFormatter;
 
 final class ExtraParagraphTest extends TestCase
 {
-  public function testExtraParagraph(): void
+  public function testExtraParagraph()
   {
     $rtf = file_get_contents("tests/rtf/extra-closing-paragraph.rtf");
     $document = new Document($rtf);

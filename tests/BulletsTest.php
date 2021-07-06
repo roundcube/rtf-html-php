@@ -6,7 +6,7 @@ use RtfHtmlPhp\Html\HtmlFormatter;
 
 final class BulletsTest extends TestCase
 {
-  public function testBullets(): void
+  public function testBullets()
   {
     $rtf = file_get_contents("tests/rtf/bullets.rtf");
     $document = new Document($rtf);
