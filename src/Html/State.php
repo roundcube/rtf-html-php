@@ -33,7 +33,7 @@ class State
   /* 
    * Store a font in the font table at the specified index.
    */
-  public static function SetFont(int $index, Font $font) {
+  public static function SetFont($index, Font $font) {
     State::$fonttbl[$index] = $font;
   }
 
