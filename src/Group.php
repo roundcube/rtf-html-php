@@ -52,7 +52,7 @@ class Group extends Element
   //
   // Convert Group to string for debugging purposes.
   //
-  public function toString(int $level = 0)
+  public function toString(int $level)
   {
     $str = str_repeat("  ", $level) .  "{\n";
 
