@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use RtfHtmlPhp\Document;
 use RtfHtmlPhp\Html\HtmlFormatter;
 
-final class ParseSimpleTest extends TestCase
+class ParseSimpleTest extends TestCase
 {
   public function testParseSimple()
   {

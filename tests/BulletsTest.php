@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use RtfHtmlPhp\Document;
 use RtfHtmlPhp\Html\HtmlFormatter;
 
-final class BulletsTest extends TestCase
+class BulletsTest extends TestCase
 {
   public function testBullets()
   {

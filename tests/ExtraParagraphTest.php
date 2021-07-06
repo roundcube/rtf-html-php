@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use RtfHtmlPhp\Document;
 use RtfHtmlPhp\Html\HtmlFormatter;
 
-final class ExtraParagraphTest extends TestCase
+class ExtraParagraphTest extends TestCase
 {
   public function testExtraParagraph()
   {

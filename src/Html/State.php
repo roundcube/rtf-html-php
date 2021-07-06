@@ -24,7 +24,7 @@ class State
       15 => 'DarkGray',
       16 => 'LightGray'
   );
-  
+
   public function __construct()
   {
     $this->Reset();
@@ -50,11 +50,11 @@ class State
     $this->hcolor = null;
     $this->font = isset($defaultFont) ? $defaultFont : null;
   }
-  
+
   public function PrintStyle()
   {
     $style = "";
-    
+
     if($this->bold) $style .= "font-weight:bold;";
     if($this->italic) $style .= "font-style:italic;";
     if($this->underline) $style .= "text-decoration:underline;";
@@ -79,13 +79,13 @@ class State
       // Check if color is set. in particular when it's the 'auto' color
       if (self::$colortbl[$this->background])
         $style .= "background-color:" . self::$colortbl[$this->background] . ";";
-    
+
     // Highlight color:
-    } elseif (isset($this->hcolor)) {       
+    } elseif (isset($this->hcolor)) {
       if (isset(self::$highlight[$this->hcolor]))
         $style .= "background-color:" . self::$highlight[$this->hcolor] . ";";
     }
-    
+
     return $style;
   }
 
@@ -102,15 +102,15 @@ class State
     if ($this->strike != $state->strike) return false;
     if ($this->hidden != $state->hidden) return false;
     if ($this->fontsize != $state->fontsize) return false;
-    
+
     // Compare colors
     if ($this->fontcolor != $state->fontcolor) return false;
     if ($this->background != $state->background) return false;
     if ($this->hcolor != $state->hcolor) return false;
-    
+
     // Compare fonts
     if ($this->font != $state->font) return false;
-    
+
     return true;
   }
 }
