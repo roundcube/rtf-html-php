@@ -13,7 +13,7 @@ class Document
   public function __construct($rtf)
   {
     $this->Parse($rtf);
-  }  
+  }
 
   // Get the next character from the RTF stream.
   // Parsing is aborted when reading beyond end of input string.
@@ -133,38 +133,38 @@ class Document
     // If no parameter present, assume control word's default (usually 1)
     // If no default then assign 0 to the parameter
     if($parameter === null) $parameter = 1;
-    
+
     // Convert parameter to a negative number when applicable
     if($negative) $parameter = -$parameter;
-    
+
     // Update uc value
     if ($word == "uc") {
       array_pop($this->uc);
       $this->uc[] = $parameter;
     }
-    
+
     // Skip space delimiter
     if(!$this->is_space_delimiter()) $this->pos--;
-    
+
     // If this is \u, then the parameter will be followed 
     // by {$this->uc} characters.
     if($word == "u") {
       // Convert parameter to unsigned decimal unicode
       if($negative) $parameter = 65536 + $parameter;
-      
+
       // Will ignore replacement characters $uc times
       $uc = end($this->uc);
       while ($uc > 0) {
-        $this->GetChar();          
+        $this->GetChar();
         // If the replacement character is encoded as
         // hexadecimal value \'hh then jump over it
         if($this->char == '\\' && $this->rtf[$this->pos]=='\'')
             $this->pos = $this->pos + 3;
-        
+
         // Break if it's an RTF scope delimiter
         elseif ($this->char == '{' || $this->char == '{')
           break;
-        
+
         // - To include an RTF delimiter in skippable data, it must be
         //   represented using the appropriate control symbol (that is,
         //   escaped with a backslash,) as in plain text.
@@ -176,7 +176,7 @@ class Document
         $uc--;
       }
     }
-           
+
     // Add new RTF word as a child to the current group.
     $rtfword = new ControlWord();
     $rtfword->word = $word;
@@ -198,7 +198,7 @@ class Document
       $rtfword->parameter = 0;
       array_push($this->group->children, $rtfword);
       return;
-    }    
+    }
 
     // Symbols ordinarily have no parameter. However, 
     // if this is \' (a single quote), then it is 
@@ -292,7 +292,7 @@ class Document
   /*
    * Attempt to parse an RTF string.
    */
-  protected function Parse(string $rtf)
+  protected function Parse(\string $rtf)
   {
     $this->rtf = $rtf;
     $this->pos = 0;
