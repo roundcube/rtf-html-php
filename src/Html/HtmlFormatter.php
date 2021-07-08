@@ -416,21 +416,21 @@ class HtmlFormatter
 
     protected function DecodeUnicode($code, $srcEnc = 'UTF-8')
     {
-        $utf8 = '';
+        $utf8 = false;
 
         if ($srcEnc != 'UTF-8') { // convert character to Unicode
-            $utf8 = mb_convert_encoding(chr($code), 'UTF-8', $srcEnc);
+            $utf8 = iconv($srcEnc, 'UTF-8', chr($code));
         }
 
         if ($this->encoding == 'HTML-ENTITIES') {
-            return $utf8 ? "&#{$this->ord_utf8($utf8)};" : "&#{$code};";
+            return $utf8 !== false ? "&#{$this->ord_utf8($utf8)};" : "&#{$code};";
         }
 
         if ($this->encoding == 'UTF-8') {
-            return $utf8 ? $utf8 : mb_convert_encoding("&#{$code};", $this->encoding, 'HTML-ENTITIES');
+            return $utf8 !== false ? $utf8 : mb_convert_encoding("&#{$code};", $this->encoding, 'HTML-ENTITIES');
         }
 
-        return $utf8 ? mb_convert_encoding($utf8, $this->encoding, 'UTF-8') :
+        return $utf8 !== false ? mb_convert_encoding($utf8, $this->encoding, 'UTF-8') :
             mb_convert_encoding("&#{$code};", $this->encoding, 'HTML-ENTITIES');
     }
 
