@@ -577,7 +577,6 @@ class HtmlFormatter
 
     if (isset($charset[$fcharset]))
       return $charset[$fcharset];
-    }
   }
 
   protected function GetEncodingFromCodepage($cpg)
@@ -622,7 +621,6 @@ class HtmlFormatter
 
     if (isset($codePage[$cpg]))
       return $codePage[$cpg];
-    }
   }
 
   protected function ord_utf8($chr)
