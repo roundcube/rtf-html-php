@@ -24,7 +24,7 @@ class ParseTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $this->expectException(\Exception::class);
+        $this->expectException('Exception');
 
         $document = new Document('{\rtf1\ansi\ansicpg1252\deff0\deflang1046');
         $formatter = new HtmlFormatter();
