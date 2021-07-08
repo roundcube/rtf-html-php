@@ -58,7 +58,7 @@ class Group extends Element
 
     foreach($this->children as $child)
     {
-      /* 
+      /*
       // Skip some group types:
       if($child instanceof Group) {
         if ($child->GetType() == "fonttbl") continue;

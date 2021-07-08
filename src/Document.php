@@ -200,14 +200,14 @@ class Document
       return;
     }
 
-    // Symbols ordinarily have no parameter. However, 
-    // if this is \' (a single quote), then it is 
+    // Symbols ordinarily have no parameter. However,
+    // if this is \' (a single quote), then it is
     // followed by a 2-digit hex-code:
     $parameter = 0;
     if ($symbol == '\'') {
-      $this->GetChar(); 
+      $this->GetChar();
       $parameter = $this->char;
-      $this->GetChar(); 
+      $this->GetChar();
       $parameter = hexdec($parameter . $this->char);
     }
 
@@ -246,13 +246,13 @@ class Document
         continue;
       }
       // Is this an escape?
-      if($this->char == '\\') {
+      if($this->char == "\\") {
         // Perform lookahead to see if this
         // is really an escape sequence.
         $this->GetChar();
         switch($this->char)
         {
-          case '\\': break;
+          case "\\": break;
           case '{': break;
           case '}': break;
           default:
@@ -317,7 +317,7 @@ class Document
         case '}':
           $this->ParseEndGroup();
           break;
-        case '\\':
+        case "\\":
           $this->ParseControl();
           break;
         default:

@@ -49,6 +49,7 @@ class State
     $this->background = null;
     $this->hcolor = null;
     $this->font = isset($defaultFont) ? $defaultFont : null;
+    $this->htmlrtf = false;
   }
 
   public function PrintStyle()

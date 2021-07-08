@@ -9,6 +9,7 @@ class HtmlFormatter
   private $output = '';
   private $encoding;
   private $defaultFont;
+  private $fromhtml = false;
 
   // By default, HtmlFormatter uses HTML_ENTITIES for code conversion.
   // You can optionally support a different endoing when creating
@@ -33,25 +34,28 @@ class HtmlFormatter
   {
     // Clear current output
     $this->output = '';
+
     // Keep track of style modifications
     $this->previousState = null;
+
     // and create a stack of states
     $this->states = array();
+
     // Put an initial standard state onto the stack
     $this->state = new State();
     array_push($this->states, $this->state);
 
     // Keep track of opened html tags
-    $this->openedTags = array('span' => false, 'p' => false);
-    // Create the first paragraph
-    $this->OpenTag('p');
+    $this->openedTags = array('span' => false, 'p' => null);
+
     // Begin format
     $this->ProcessGroup($document->root);
+
     // Instead of removing opened tags, we close them
     $this->output .= $this->openedTags['span'] ? '</span>' : '';
     $this->output .= $this->openedTags['p'] ? '</p>' : '';
 
-    // Remove extra empty paragraph
+    // Remove extra empty paragraph at the end
     // TODO: Find the real reason it's there and fix it
     $this->output = preg_replace('|<p></p>$|', '', $this->output);
 
@@ -252,7 +256,23 @@ class HtmlFormatter
       $c = count($dest);
       for ($i=2;$i<$c;$i++)
         $this->FormatEntry($dest[$i]);
+    } elseif ($dest[1]->word == "htmltag") {
+      for ($i = 2; $i < count($dest); $i++) {
+        if (isset($dest[$i])) {
+          $entry = $dest[$i];
+
+          if ($entry instanceof \RtfHtmlPhp\Text) {
+            $this->output .= $entry->text;
+          } elseif($entry instanceof \RtfHtmlPhp\Group) {
+            $this->ProcessGroup($entry);
+          } elseif($entry instanceof \RtfHtmlPhp\ControlSymbol) {
+            $this->FormatControlSymbol($entry);
+          } elseif($entry instanceof \RtfHtmlPhp\ControlWord) {
+            $this->FormatControlWord($entry, true);
+          }
+        }
       }
+    }
   }
 
   protected function FormatEntry($entry)
@@ -323,17 +343,17 @@ class HtmlFormatter
        * Special characters
        */
 
-      case 'lquote':    $this->Write("&lsquo;"); break;  // &#145; &#8216;
-      case 'rquote':    $this->Write("&rsquo;"); break;  // &#146; &#8217;
-      case 'ldblquote': $this->Write("&ldquo;"); break;  // &#147; &#8220;
-      case 'rdblquote': $this->Write("&rdquo;"); break;  // &#148; &#8221;
-      case 'bullet':    $this->Write("&bull;");  break;  // &#149; &#8226;
-      case 'endash':    $this->Write("&ndash;"); break;  // &#150; &#8211;
-      case 'emdash':    $this->Write("&mdash;"); break;  // &#151; &#8212;
-      case 'enspace':   $this->Write("&ensp;");  break;  // &#8194;
-      case 'emspace':   $this->Write("&emsp;");  break;  // &#8195;
-      case 'tab':       $this->Write("&nbsp;");  break;  // Character value 9
-      case 'line':      $this->output .= "<br/>"; break; // character value (line feed = &#10;) (carriage return = &#13;)
+      case 'lquote':    $this->Write($this->fromhtml ? "‘" : "&lsquo;"); break;  // &#145; &#8216;
+      case 'rquote':    $this->Write($this->fromhtml ? "’" : "&rsquo;"); break;  // &#146; &#8217;
+      case 'ldblquote': $this->Write($this->fromhtml ? "“" : "&ldquo;"); break;  // &#147; &#8220;
+      case 'rdblquote': $this->Write($this->fromhtml ? "”" : "&rdquo;"); break;  // &#148; &#8221;
+      case 'bullet':    $this->Write($this->fromhtml ? "•" : "&bull;");  break;  // &#149; &#8226;
+      case 'endash':    $this->Write($this->fromhtml ? "–" : "&ndash;"); break;  // &#150; &#8211;
+      case 'emdash':    $this->Write($this->fromhtml ? "—" : "&mdash;"); break;  // &#151; &#8212;
+      case 'enspace':   $this->Write($this->fromhtml ? " " : "&ensp;");  break;  // &#8194;
+      case 'emspace':   $this->Write($this->fromhtml ? " " : "&emsp;");  break;  // &#8195;
+      case 'tab':       $this->Write($this->fromhtml ? "\t" : "&nbsp;");  break;  // Character value 9
+      case 'line':      $this->output .= $this->fromhtml ? "\n" : "<br/>"; break; // character value (line feed = &#10;) (carriage return = &#13;)
 
       /*
        * Unicode characters
@@ -349,6 +369,10 @@ class HtmlFormatter
        */
       case 'par':
       case 'row':
+        if ($this->fromhtml) {
+          $this->output .= "\n";
+          break;
+        }
         // Close previously opened tags
         $this->CloseTags();
         // Begin a new paragraph
@@ -366,6 +390,14 @@ class HtmlFormatter
         if($word->parameter) {
           $this->RTFencoding = $this->GetEncodingFromCodepage($word->parameter);
         }
+        break;
+
+      case 'fromhtml':
+        $this->fromhtml = $word->parameter > 0;
+        break;
+
+      case 'htmlrtf':
+        $this->state->htmlrtf = $word->parameter > 0;
         break;
     }
   }
@@ -392,6 +424,21 @@ class HtmlFormatter
 
   protected function Write($txt)
   {
+    // Ignore regions that are not part of the original (encapsulated) HTML content
+    if ($this->state->htmlrtf) {
+      return;
+    }
+
+    if ($this->fromhtml) {
+      $this->output .= $txt;
+      return;
+    }
+
+    if ($this->openedTags['p'] === null) {
+      // Create the first paragraph
+      $this->OpenTag('p');
+    }
+
     // Create a new 'span' element only when a style change occurs.
     // 1st case: style change occured
     // 2nd case: there is no change in style but the already created 'span'
@@ -411,17 +458,27 @@ class HtmlFormatter
       $attr = $style ? "style=\"{$style}\"" : "";
       $this->OpenTag('span', $attr);
     }
+
     $this->output .= $txt;
   }
 
   protected function OpenTag($tag, $attr = '')
   {
+    // Ignore regions that are not part of the original (encapsulated) HTML content
+    if ($this->fromhtml) {
+      return;
+    }
+
     $this->output .= $attr ? "<{$tag} {$attr}>" : "<{$tag}>";
     $this->openedTags[$tag] = true;
   }
 
   protected function CloseTag($tag)
   {
+    if ($this->fromhtml) {
+      return;
+    }
+
     if ($this->openedTags[$tag]) {
       // Check for empty html elements
       if (substr($this->output ,-strlen("<{$tag}>")) == "<{$tag}>"){
@@ -437,6 +494,7 @@ class HtmlFormatter
       } else {
         $this->output .= "</{$tag}>";
       }
+
       $this->openedTags[$tag] = false;
     }
   }
@@ -460,6 +518,8 @@ class HtmlFormatter
       $this->Write("&#173;"); // Optional hyphen
     }elseif ($symbol->symbol == '_') {
       $this->Write("&#8209;"); // Non breaking hyphen
+    }elseif ($symbol->symbol == '{') {
+      $this->Write("{"); // Non breaking hyphen
     }
   }
 
