@@ -19,6 +19,11 @@ class ParseTest extends TestCase
 
     public function testParseException1()
     {
+        if (!method_exists($this, 'expectException')) {
+            // Skip the test on PHP <= 5.5
+            $this->markTestSkipped();
+        }
+
         $this->expectException(\Exception::class);
 
         $document = new Document('{\rtf1\ansi\ansicpg1252\deff0\deflang1046');
