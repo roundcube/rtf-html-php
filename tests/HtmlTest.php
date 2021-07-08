@@ -6,28 +6,28 @@ use RtfHtmlPhp\Html\HtmlFormatter;
 
 class HtmlTest extends TestCase
 {
-  public function testHtml1()
-  {
-    $rtf = file_get_contents("tests/rtf/html1.rtf");
-    $document = new Document($rtf);
-    $formatter = new HtmlFormatter();
-    $html = $formatter->Format($document);
+    public function testHtml1()
+    {
+        $rtf = file_get_contents("tests/rtf/html1.rtf");
+        $document = new Document($rtf);
+        $formatter = new HtmlFormatter();
+        $html = $formatter->Format($document);
 
-    $this->assertEquals(
-      "<html><style>v\\:* {\tcolor:red;}\n</style>"
-      . "<span style='font-size:11pt;'>&nbsp;</span>",
-      $html
-    );
-  }
+        $this->assertEquals(
+            "<html><style>v\\:* {\tcolor:red;}\n</style>"
+                . "<span style='font-size:11pt;'>&nbsp;</span>",
+            $html
+        );
+    }
 
-  public function testHtml2()
-  {
-    $rtf = file_get_contents("tests/rtf/html2.rtf");
-    $document = new Document($rtf);
-    $formatter = new HtmlFormatter();
-    $html = $formatter->Format($document);
+    public function testHtml2()
+    {
+        $rtf = file_get_contents("tests/rtf/html2.rtf");
+        $document = new Document($rtf);
+        $formatter = new HtmlFormatter();
+        $html = $formatter->Format($document);
 
-    $expected = <<<EOT
+        $expected = <<<EOT
 <HTML><head>
 <style>
 <!--
@@ -59,17 +59,18 @@ characters that have special meaning in RTF: {}\<br>
 </HTML>
 
 EOT;
-    $this->assertEquals($expected, $html);
+
+        $this->assertEquals($expected, $html);
   }
 
-  public function testHtml3()
-  {
-    $rtf = file_get_contents("tests/rtf/html3.rtf");
-    $document = new Document($rtf);
-    $formatter = new HtmlFormatter('UTF-8');
-    $html = $formatter->Format($document);
+    public function testHtml3()
+    {
+        $rtf = file_get_contents("tests/rtf/html3.rtf");
+        $document = new Document($rtf);
+        $formatter = new HtmlFormatter('UTF-8');
+        $html = $formatter->Format($document);
 
-    $expected = <<<EOT
+        $expected = <<<EOT
 <div dir="ltr">這是一個文本字符串<br>
 זהו   מחרוזת  טקסט.<br clear="all"><div><br>
 
@@ -84,6 +85,7 @@ EOT;
 </div></div>
 
 EOT;
-    $this->assertEquals($expected, $html);
-  }
+
+        $this->assertEquals($expected, $html);
+    }
 }
