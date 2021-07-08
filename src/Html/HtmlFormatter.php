@@ -16,17 +16,17 @@ class HtmlFormatter
   // the HtmlFormatter instance.
   public function __construct($encoding = 'HTML-ENTITIES')
   {
+    if (!extension_loaded('mbstring')) {
+      throw new \Exception("PHP mbstring extension not enabled");
+    }
+
     if ($encoding != 'HTML-ENTITIES') {
-      // Check if mbstring extension is loaded
-      if (!extension_loaded('mbstring')) {
-        trigger_error("PHP mbstring extension not enabled, reverting back to HTML-ENTITIES");
-        $encoding = 'HTML-ENTITIES';
       // Check if the encoding is reconized by mbstring extension
-      } elseif (!in_array($encoding, mb_list_encodings())){
-        trigger_error("Unrecognized Encoding, reverting back to HTML-ENTITIES");
-        $encoding = 'HTML-ENTITIES';
+      if (!in_array($encoding, mb_list_encodings())) {
+        throw new \Exception("Unsupported encoding: $encoding");
       }
     }
+
     $this->encoding = $encoding;
   }
 
@@ -577,8 +577,6 @@ class HtmlFormatter
 
     if (isset($charset[$fcharset]))
       return $charset[$fcharset];
-    else {
-      trigger_error("Unknown charset: {$fcharset}");
     }
   }
 
@@ -624,9 +622,6 @@ class HtmlFormatter
 
     if (isset($codePage[$cpg]))
       return $codePage[$cpg];
-    else {
-      // Debug Error
-      trigger_error("Unknown codepage: {$cpg}");
     }
   }
 
@@ -655,7 +650,6 @@ class HtmlFormatter
     if ($ord0 >= 252 && $ord0 <= 253)
       return ($ord0 - 252) * 1073741824 + ($ord1 - 128) * 16777216 + ($ord2 - 128) * 262144 + ($ord3 - 128) * 4096 + ($ord4 - 128) * 64 + (ord($chr[5]) - 128);
 
-    trigger_error("Invalid Unicode character: {$chr}");
+    // trigger_error("Invalid Unicode character: {$chr}");
   }
 }
-
