@@ -30,7 +30,7 @@ To convert the parser’s parse tree to HTML, call this (but only if the RTF was
 ```php
 use RtfHtmlPhp\Html\HtmlFormatter;
 $formatter = new HtmlFormatter();
-echo $formatter->Format($document);
+echo $formatter->format($document);
 ```
 
 For enhanced compatibility the default character encoding of the converted RTF unicode characters is set to `HTML-ENTITIES`. To change the default encoding, you can initialize the `Html` object with the desired encoding supported by `mb_list_encodings()`: ex. `UTF-8`

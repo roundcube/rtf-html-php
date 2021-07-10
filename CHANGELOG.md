@@ -6,7 +6,7 @@
 - Added some more tests
 - Removed trigger_error() use
 - Added support for encapsulated HTML
-- Support PHP >= 5.5, up to 8.1
+- Support PHP >= 5.4, up to 8.1
 
 ## 1.1
 
