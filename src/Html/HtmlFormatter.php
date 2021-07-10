@@ -609,10 +609,17 @@ class HtmlFormatter
         return $this->rtfEncoding;
     }
 
-    protected function getEncodingFromCharset($fcharset)
+    /**
+     * Convert RTF charset identifier into an encoding name (for iconv)
+     *
+     * @param int $charset Charset identifier
+     *
+     * @return string|null Encoding name or NULL on unknown CodePage
+     */
+    protected function getEncodingFromCharset($charset)
     {
         // maps windows character sets to iconv encoding names
-        $charset = array (
+        $map = array (
             0   => 'CP1252', // ANSI: Western Europe
             1   => 'CP1252', //*Default
             2   => 'CP1252', //*Symbol
@@ -639,14 +646,21 @@ class HtmlFormatter
             255 => 'CP437', //*OEM still PC437
         );
 
-        if (isset($charset[$fcharset])) {
-            return $charset[$fcharset];
+        if (isset($map[$charset])) {
+            return $map[$charset];
         }
     }
 
+    /**
+     * Convert RTF CodePage identifier into an encoding name (for iconv)
+     *
+     * @param string $cpg CodePage identifier
+     *
+     * @return string|null Encoding name or NULL on unknown CodePage
+     */
     protected function getEncodingFromCodepage($cpg)
     {
-        $codePage = array (
+        $map = array (
             'ansi' => 'CP1252',
             'mac'  => 'MAC',
             'pc'   => 'CP437',
@@ -685,8 +699,8 @@ class HtmlFormatter
             1361 => 'CP1361', // Johab
         );
 
-        if (isset($codePage[$cpg])) {
-            return $codePage[$cpg];
+        if (isset($map[$cpg])) {
+            return $map[$cpg];
         }
     }
 
