@@ -16,6 +16,11 @@ class Group extends Element
         $this->children = [];
     }
 
+    /**
+     * Returns group type
+     *
+     * @return string|null
+     */
     public function getType()
     {
         // No children? Then the group type is null.
@@ -45,6 +50,8 @@ class Group extends Element
     /**
      * If a group contains a '*' symbol as its first child,
      * then it is a destination group.
+     *
+     * @return bool|null Group destination
      */
     public function isDestination()
     {
@@ -64,7 +71,11 @@ class Group extends Element
     }
 
     /**
-     * Convert Group to string for debugging purposes.
+     * Returns string representation of the object for debug purposes
+     *
+     * @param int $level Indentation level
+     *
+     * @return string
      */
     public function toString($level = 0)
     {

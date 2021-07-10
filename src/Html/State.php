@@ -6,7 +6,8 @@ class State
 {
     public static $fonttbl = [];
     public static $colortbl = [];
-    private static $highlight = [
+
+    protected static $highlight = [
         1  => 'Black',
         2  => 'Blue',
         3  => 'Cyan',
@@ -25,19 +26,34 @@ class State
         16 => 'LightGray'
     ];
 
+    /**
+     * Object constructor
+     */
     public function __construct()
     {
         $this->reset();
     }
 
-    /*
+    /**
      * Store a font in the font table at the specified index.
+     *
+     * @param int  $index Font number
+     * @param Font $font  Font object
+     *
+     * @return void
      */
     public static function setFont($index, Font $font)
     {
         State::$fonttbl[$index] = $font;
     }
 
+    /**
+     * Resets the object to the initial state
+     *
+     * @param string|null $defaultFont Font name
+     *
+     * @return void
+     */
     public function reset($defaultFont = null)
     {
         $this->bold = false;
@@ -53,6 +69,11 @@ class State
         $this->htmlrtf = false;
     }
 
+    /**
+     * Generates css style for the state.
+     *
+     * @return string The css string
+     */
     public function printStyle()
     {
         $style = [];
@@ -115,6 +136,10 @@ class State
 
     /**
      * Check whether this State is equal to another State.
+     *
+     * @param State $state A state to compare with
+     *
+     * @return bool True if the state is identical, False otherwise
      */
     public function equals($state)
     {

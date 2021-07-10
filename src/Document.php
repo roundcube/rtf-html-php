@@ -5,13 +5,13 @@ namespace RtfHtmlPhp;
 class Document
 {
     /** @var string RTF string being parsed */
-    private $rtf;
+    protected $rtf;
     /** @var int Current position in RTF string */
-    private $pos;
+    protected $pos;
     /** @var int Length of RTF string */
-    private $len;
+    protected $len;
     /** @var Group Current RTF group */
-    private $group;
+    protected $group;
 
     /** @var Group Root group */
     public $root = null;
@@ -19,7 +19,7 @@ class Document
     /**
      * Object contructor
      *
-     * @param string The RTF content
+     * @param string $rtf The RTF content
      */
     public function __construct($rtf)
     {
@@ -45,8 +45,9 @@ class Document
     }
 
     /**
-     * (Helper method)
-     * Is the current character a letter?
+     * (Helper method) Is the current character a letter?
+     *
+     * @return bool
      */
     protected function isLetter()
     {
@@ -62,8 +63,9 @@ class Document
     }
 
     /**
-     * (Helper method)
-     * Is the current character a digit?
+     * (Helper method) Is the current character a digit?
+     *
+     * @return bool
      */
     protected function isDigit()
     {
@@ -71,8 +73,9 @@ class Document
     }
 
     /**
-     * (Helper method)
-     * Is the current character end-of-line (EOL)?
+     * (Helper method) Is the current character end-of-line (EOL)?
+     *
+     * @return bool
      */
     protected function isEndOfLine()
     {
@@ -89,8 +92,9 @@ class Document
     }
 
     /**
-     * (Helper method)
-     * Is the current character for a space delimiter?
+     * (Helper method) Is the current character for a space delimiter?
+     *
+     * @return bool
      */
     protected function isSpaceDelimiter()
     {
@@ -99,6 +103,8 @@ class Document
 
     /**
      * Store state of document on stack.
+     *
+     * @return void
      */
     protected function parseStartGroup()
     {
@@ -124,6 +130,8 @@ class Document
 
     /**
      * Retrieve state of document from stack.
+     *
+     * @return void
      */
     protected function parseEndGroup()
     {
@@ -132,6 +140,11 @@ class Document
         array_pop($this->uc);
     }
 
+    /**
+     * Parse ControlWord element
+     *
+     * @return void
+     */
     protected function parseControlWord()
     {
         // Read letters until a non-letter is reached.
@@ -224,6 +237,11 @@ class Document
         array_push($this->group->children, $rtfword);
     }
 
+    /**
+     * Parse ControlSymbol element
+     *
+     * @return void
+     */
     protected function parseControlSymbol()
     {
         // Read symbol (one character only).
@@ -258,6 +276,11 @@ class Document
         array_push($this->group->children, $rtfsymbol);
     }
 
+    /**
+     * Parse Control element
+     *
+     * @return void
+     */
     protected function parseControl()
     {
         // Beginning of an RTF control word or control symbol.
@@ -273,7 +296,12 @@ class Document
         }
     }
 
-    protected function ParseText()
+    /**
+     * Parse Text element
+     *
+     * @return void
+     */
+    protected function parseText()
     {
         // Parse plain text up to backslash or brace,
         // unless escaped.
@@ -292,9 +320,12 @@ class Document
                 // is really an escape sequence.
                 $this->getChar();
                 switch ($this->char) {
-                case "\\": break;
-                case '{': break;
-                case '}': break;
+                case "\\":
+                    break;
+                case '{':
+                    break;
+                case '}':
+                    break;
                 default:
                     // Not an escape. Roll back.
                     $this->pos = $this->pos - 2;
@@ -328,6 +359,10 @@ class Document
 
     /**
      * Attempt to parse an RTF string.
+     *
+     * @param string $rtf RTF content
+     *
+     * @return void
      */
     protected function parse($rtf)
     {
@@ -364,6 +399,11 @@ class Document
         }
     }
 
+    /**
+     * Returns string representation of the document for debug purposes.
+     *
+     * @return string
+     */
     public function __toString()
     {
         if (!$this->root) {

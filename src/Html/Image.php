@@ -13,7 +13,9 @@ class Image
     }
 
     /**
-     * Resets the object to the default state
+     * Resets the object to the initial state
+     *
+     * @return void
      */
     public function reset()
     {

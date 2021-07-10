@@ -6,15 +6,19 @@ use RtfHtmlPhp\Document;
 
 class HtmlFormatter
 {
-    private $output = '';
-    private $encoding;
-    private $defaultFont;
-    private $fromhtml = false;
+    protected $output = '';
+    protected $encoding;
+    protected $defaultFont;
+    protected $fromhtml = false;
 
     /**
+     * Object constructor.
+     *
      * By default, HtmlFormatter uses HTML_ENTITIES for code conversion.
      * You can optionally support a different endoing when creating
      * the HtmlFormatter instance.
+     *
+     * @param string $encoding Output encoding
      */
     public function __construct($encoding = 'HTML-ENTITIES')
     {
@@ -32,6 +36,13 @@ class HtmlFormatter
         $this->encoding = $encoding;
     }
 
+    /**
+     * Generates HTML output for the document
+     *
+     * @param Document $document The document
+     *
+     * @return string HTML content
+     */
     public function format(Document $document)
     {
         // Clear current output
@@ -64,6 +75,13 @@ class HtmlFormatter
         return $this->output;
     }
 
+    /**
+     * Registers a font definition.
+     *
+     * @param \RtfHtmlPhp\Group $fontGroup A group element with a font definition
+     *
+     * @return void
+     */
     protected function loadFont(\RtfHtmlPhp\Group $fontGroup)
     {
         $fontNumber = 0;
@@ -72,7 +90,7 @@ class HtmlFormatter
         // Loop through children of the font group. The font group
         // contains control words with the font number and charset,
         // and a control text with the font name.
-        foreach($fontGroup->children as $child) {
+        foreach ($fontGroup->children as $child) {
             // Control word
             if ($child instanceof \RtfHtmlPhp\ControlWord) {
                 switch ($child->word) {
@@ -81,11 +99,21 @@ class HtmlFormatter
                     break;
 
                 // Font family names
-                case 'froman':  $font->family = "serif";      break;
-                case 'fswiss':  $font->family = "sans-serif"; break;
-                case 'fmodern': $font->family = "monospace";  break;
-                case 'fscript': $font->family = "cursive";    break;
-                case 'fdecor':  $font->family = "fantasy";    break;
+                case 'froman':
+                    $font->family = "serif";
+                    break;
+                case 'fswiss':
+                    $font->family = "sans-serif";
+                    break;
+                case 'fmodern':
+                    $font->family = "monospace";
+                    break;
+                case 'fscript':
+                    $font->family = "cursive";
+                    break;
+                case 'fdecor':
+                    $font->family = "fantasy";
+                    break;
 
                 // case 'fnil': break; // default font
                 // case 'ftech': break; // symbol
@@ -144,7 +172,7 @@ class HtmlFormatter
             }
 
             // Load the font specification in the subgroup:
-            $this->LoadFont($child);
+            $this->loadFont($child);
         }
     }
 
@@ -181,39 +209,59 @@ class HtmlFormatter
 
     protected function extractImage($pictGrp)
     {
-        $Image = new Image();
+        $image = new Image();
 
         foreach ($pictGrp as $child) {
             if ($child instanceof \RtfHtmlPhp\ControlWord) {
                 switch ($child->word) {
                 // Picture Format
-                case "emfblip": $Image->format = 'emf'; break;
-                case "pngblip": $Image->format = 'png'; break;
-                case "jpegblip": $Image->format = 'jpeg'; break;
-                case "macpict": $Image->format = 'pict'; break;
+                case "emfblip":
+                    $image->format = 'emf';
+                    break;
+                case "pngblip":
+                    $image->format = 'png';
+                    break;
+                case "jpegblip":
+                    $image->format = 'jpeg';
+                    break;
+                case "macpict":
+                    $image->format = 'pict';
+                    break;
                 // case "wmetafile": $Image->format = 'bmp'; break;
 
                 // Picture size and scaling
-                case "picw": $Image->width = $child->parameter; break;
-                case "pich": $Image->height = $child->parameter; break;
-                case "picwgoal": $Image->goalWidth = $child->parameter; break;
-                case "pichgoal": $Image->goalHeight = $child->parameter; break;
-                case "picscalex": $Image->pcScaleX = $child->parameter; break;
-                case "picscaley": $Image->pcScaleY = $child->parameter; break;
+                case "picw":
+                    $image->width = $child->parameter;
+                    break;
+                case "pich":
+                    $image->height = $child->parameter;
+                    break;
+                case "picwgoal":
+                    $image->goalWidth = $child->parameter;
+                    break;
+                case "pichgoal":
+                    $image->goalHeight = $child->parameter;
+                    break;
+                case "picscalex":
+                    $image->pcScaleX = $child->parameter;
+                    break;
+                case "picscaley":
+                    $image->pcScaleY = $child->parameter;
+                    break;
 
                 // Binary or Hexadecimal Data ?
-                case "bin": $Image->binarySize = $child->parameter; break;
-
-                default: break;
+                case "bin":
+                    $image->binarySize = $child->parameter;
+                    break;
                 }
             } elseif ($child instanceof \RtfHtmlPhp\Text) {
                 // store Data
-                $Image->imageData = $child->text;
+                $image->imageData = $child->text;
             }
         }
 
         // output Image
-        $this->output .= $Image->printImage();
+        $this->output .= $image->printImage();
     }
 
     protected function processGroup($group)
@@ -508,6 +556,8 @@ class HtmlFormatter
 
     /**
      * Closes all opened tags
+     *
+     * @return void
      */
     protected function closeTags()
     {
