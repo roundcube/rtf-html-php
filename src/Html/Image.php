@@ -4,11 +4,17 @@ namespace RtfHtmlPhp\Html;
 
 class Image
 {
+    /**
+     * Object constructor.
+     */
     public function __construct()
     {
         $this->reset();
     }
 
+    /**
+     * Resets the object to the default state
+     */
     public function reset()
     {
         $this->format = 'bmp';
@@ -22,19 +28,27 @@ class Image
         $this->imageData = null;  // Binary or Hexadecimal Data
     }
 
+    /**
+     * Generate a HTML content for the image
+     *
+     * @return string <img> tag content, An empty string for unsupported/empty image
+     */
     public function printImage()
     {
-        // <img src="data:image/{FORMAT};base64,{#BDATA}" />
-        $output = "<img src=\"data:image/{$this->format};base64,";
-
-        if (isset($this->binarySize)) { // process binary data
-            return;
-        } else { // process hexadecimal data
-            $output .= base64_encode(pack('H*', $this->imageData));
+        // process binary data
+        if (isset($this->binarySize)) {
+            // Not implemented
+            return '';
         }
 
-        $output .= "\" />";
+        if (empty($this->imageData)) {
+            return '';
+        }
 
-        return $output;
+        // process hexadecimal data
+        $data = base64_encode(pack('H*', $this->imageData));
+
+        // <img src="data:image/{FORMAT};base64,{#BDATA}" />
+        return "<img src=\"data:image/{$this->format};base64,{$data}\" />";
     }
 }

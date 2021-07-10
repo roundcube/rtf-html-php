@@ -11,7 +11,7 @@ class BulletsTest extends TestCase
         $rtf = file_get_contents("tests/rtf/bullets.rtf");
         $document = new Document($rtf);
         $formatter = new HtmlFormatter();
-        $html = $formatter->Format($document);
+        $html = $formatter->format($document);
 
         $this->assertEquals(
             '<p><span style="font-family:Symbol;">&#183;&nbsp;</span><span style="font-family:Calibri;font-size:15px;">A</span></p>'

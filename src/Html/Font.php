@@ -9,6 +9,11 @@ class Font
     public $charset;
     public $codepage;
 
+    /**
+     * Returns font style (font-family) string
+     *
+     * @return string A string including font-family: prefix. An empty string if font is not set
+     */
     public function toStyle()
     {
         $list = [];
@@ -21,7 +26,7 @@ class Font
             $list[] = $this->family;
         }
 
-        if (sizeof($list) == 0) {
+        if (count($list) == 0) {
             return '';
         }
 

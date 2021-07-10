@@ -19,7 +19,7 @@ class Group extends Element
     public function getType()
     {
         // No children? Then the group type is null.
-        if (sizeof($this->children) == 0) {
+        if (count($this->children) == 0) {
             return null;
         }
 
@@ -49,7 +49,7 @@ class Group extends Element
     public function isDestination()
     {
         // If group has no children, then destination is null.
-        if (sizeof($this->children) == 0) {
+        if (count($this->children) == 0) {
             return null;
         }
 

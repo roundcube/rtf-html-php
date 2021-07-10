@@ -11,7 +11,7 @@ class FontFamilyTestTest extends TestCase
         $rtf = file_get_contents("tests/rtf/fonts.rtf");
         $document = new Document($rtf);
         $formatter = new HtmlFormatter();
-        $html = $formatter->Format($document);
+        $html = $formatter->format($document);
 
         $this->assertEquals(
             '<p><span style="font-family:Arial,sans-serif;font-size:15px;">Hello, world.</span></p>',

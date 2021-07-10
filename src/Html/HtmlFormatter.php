@@ -182,6 +182,7 @@ class HtmlFormatter
     protected function extractImage($pictGrp)
     {
         $Image = new Image();
+
         foreach ($pictGrp as $child) {
             if ($child instanceof \RtfHtmlPhp\ControlWord) {
                 switch ($child->word) {
@@ -213,7 +214,6 @@ class HtmlFormatter
 
         // output Image
         $this->output .= $Image->printImage();
-        unset($Image);
     }
 
     protected function processGroup($group)
@@ -256,7 +256,7 @@ class HtmlFormatter
 
         // Pop state from stack
         array_pop($this->states);
-        $this->state = $this->states[sizeof($this->states) - 1];
+        $this->state = $this->states[count($this->states) - 1];
     }
 
     protected function processDestination($dest)

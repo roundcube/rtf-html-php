@@ -11,7 +11,7 @@ class ParseTest extends TestCase
         $rtf = file_get_contents("tests/rtf/test1.rtf");
         $document = new Document($rtf);
         $formatter = new HtmlFormatter();
-        $html = $formatter->Format($document);
+        $html = $formatter->format($document);
 
         // We only test that it does not throw an exception
         $this->assertTrue(true);
@@ -28,6 +28,6 @@ class ParseTest extends TestCase
 
         $document = new Document('{\rtf1\ansi\ansicpg1252\deff0\deflang1046');
         $formatter = new HtmlFormatter();
-        $html = $formatter->Format($document);
+        $html = $formatter->format($document);
     }
 }

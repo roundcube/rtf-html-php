@@ -11,7 +11,7 @@ class HtmlTest extends TestCase
         $rtf = file_get_contents("tests/rtf/html1.rtf");
         $document = new Document($rtf);
         $formatter = new HtmlFormatter();
-        $html = $formatter->Format($document);
+        $html = $formatter->format($document);
 
         $this->assertEquals(
             "<html><style>v\\:* {\tcolor:red;}\n</style>"
@@ -25,7 +25,7 @@ class HtmlTest extends TestCase
         $rtf = file_get_contents("tests/rtf/html2.rtf");
         $document = new Document($rtf);
         $formatter = new HtmlFormatter();
-        $html = $formatter->Format($document);
+        $html = $formatter->format($document);
 
         $expected = <<<EOT
 <HTML><head>
@@ -68,7 +68,7 @@ EOT;
         $rtf = file_get_contents("tests/rtf/html3.rtf");
         $document = new Document($rtf);
         $formatter = new HtmlFormatter('UTF-8');
-        $html = $formatter->Format($document);
+        $html = $formatter->format($document);
 
         $expected = <<<EOT
 <div dir="ltr">這是一個文本字符串<br>

@@ -11,7 +11,7 @@ class ExtraParagraphTest extends TestCase
         $rtf = file_get_contents("tests/rtf/extra-closing-paragraph.rtf");
         $document = new Document($rtf);
         $formatter = new HtmlFormatter();
-        $html = $formatter->Format($document);
+        $html = $formatter->format($document);
 
         $this->assertEquals(
             '<p><span style="font-weight:bold;font-family:Calibri;font-size:16px;color:#000000;">Conditions<br/></span>'
