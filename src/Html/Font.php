@@ -11,7 +11,7 @@ class Font
 
     public function toStyle()
     {
-        $list = array();
+        $list = [];
 
         if ($this->name) {
             $list[] = $this->name;

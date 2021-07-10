@@ -41,14 +41,14 @@ class HtmlFormatter
         $this->previousState = null;
 
         // and create a stack of states
-        $this->states = array();
+        $this->states = [];
 
         // Put an initial standard state onto the stack
         $this->state = new State();
         array_push($this->states, $this->state);
 
         // Keep track of opened html tags
-        $this->openedTags = array('span' => false, 'p' => null);
+        $this->openedTags = ['span' => false, 'p' => null];
 
         // Begin format
         $this->processGroup($document->root);
@@ -152,7 +152,7 @@ class HtmlFormatter
     {
         // {\colortbl;\red0\green0\blue0;}
         // Index 0 of the RTF color table  is the 'auto' color
-        $colortbl = array();
+        $colortbl = [];
         $c = count($colorTblGrp);
         $color = '';
 

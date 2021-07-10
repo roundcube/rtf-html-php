@@ -115,7 +115,7 @@ class Document
             // as the root group.
             $this->root = $group;
             // Create uc stack and insert the first default value
-            $this->uc = array(1);
+            $this->uc = [1];
         }
 
         // Set the new group as the current group:

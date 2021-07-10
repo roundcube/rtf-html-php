@@ -13,7 +13,7 @@ class Group extends Element
     public function __construct()
     {
         $this->parent = null;
-        $this->children = array();
+        $this->children = [];
     }
 
     public function getType()

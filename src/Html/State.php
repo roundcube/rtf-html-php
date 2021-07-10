@@ -4,9 +4,9 @@ namespace RtfHtmlPhp\Html;
 
 class State
 {
-    public static $fonttbl = array();
-    public static $colortbl = array();
-    private static $highlight = array(
+    public static $fonttbl = [];
+    public static $colortbl = [];
+    private static $highlight = [
         1  => 'Black',
         2  => 'Blue',
         3  => 'Cyan',
@@ -23,7 +23,7 @@ class State
         14 => 'DarkYellow',
         15 => 'DarkGray',
         16 => 'LightGray'
-    );
+    ];
 
     public function __construct()
     {
@@ -55,7 +55,7 @@ class State
 
     public function printStyle()
     {
-        $style = array();
+        $style = [];
 
         if ($this->bold) {
             $style[] = "font-weight:bold";
