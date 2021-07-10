@@ -23,7 +23,7 @@ class Document
      */
     public function __construct($rtf)
     {
-        $this->Parse($rtf);
+        $this->parse($rtf);
     }
 
     /**
@@ -32,7 +32,7 @@ class Document
      *
      * @return string
      */
-    protected function GetChar()
+    protected function getChar()
     {
         $this->char = null;
 
@@ -48,7 +48,7 @@ class Document
      * (Helper method)
      * Is the current character a letter?
      */
-    protected function is_letter()
+    protected function isLetter()
     {
         if (ord($this->char) >= 65 && ord($this->char) <= 90) {
             return true;
@@ -65,7 +65,7 @@ class Document
      * (Helper method)
      * Is the current character a digit?
      */
-    protected function is_digit()
+    protected function isDigit()
     {
         return (ord($this->char) >= 48 && ord($this->char) <= 57);
     }
@@ -74,12 +74,12 @@ class Document
      * (Helper method)
      * Is the current character end-of-line (EOL)?
      */
-    protected function is_endofline()
+    protected function isEndOfLine()
     {
         if ($this->char == "\r" || $this->char == "\n") {
             // Checks for a Windows/Acron type EOL
             if ($this->rtf[$this->pos] == "\n" || $this->rtf[$this->pos] == "\r") {
-                $this->GetChar();
+                $this->getChar();
             }
 
             return true;
@@ -92,15 +92,15 @@ class Document
      * (Helper method)
      * Is the current character for a space delimiter?
      */
-    protected function is_space_delimiter()
+    protected function isSpaceDelimiter()
     {
-        return ($this->char == " " || $this->is_endofline());
+        return ($this->char == " " || $this->isEndOfLine());
     }
 
     /**
      * Store state of document on stack.
      */
-    protected function ParseStartGroup()
+    protected function parseStartGroup()
     {
         $group = new Group();
 
@@ -125,22 +125,22 @@ class Document
     /**
      * Retrieve state of document from stack.
      */
-    protected function ParseEndGroup()
+    protected function parseEndGroup()
     {
         $this->group = $this->group->parent;
         // Retrieve last uc value from stack
         array_pop($this->uc);
     }
 
-    protected function ParseControlWord()
+    protected function parseControlWord()
     {
         // Read letters until a non-letter is reached.
         $word = '';
-        $this->GetChar();
+        $this->getChar();
 
-        while ($this->is_letter()) {
+        while ($this->isLetter()) {
             $word .= $this->char;
-            $this->GetChar();
+            $this->getChar();
         }
 
         // Read parameter (if any) consisting of digits.
@@ -149,16 +149,16 @@ class Document
         $negative = false;
 
         if ($this->char == '-') {
-            $this->GetChar();
+            $this->getChar();
             $negative = true;
         }
 
-        while ($this->is_digit()) {
+        while ($this->isDigit()) {
             if ($parameter === null) {
                 $parameter = 0;
             }
             $parameter = $parameter * 10 + $this->char;
-            $this->GetChar();
+            $this->getChar();
         }
 
         // If no parameter present, assume control word's default (usually 1)
@@ -179,7 +179,7 @@ class Document
         }
 
         // Skip space delimiter
-        if (!$this->is_space_delimiter()) {
+        if (!$this->isSpaceDelimiter()) {
             $this->pos--;
         }
 
@@ -195,7 +195,7 @@ class Document
             $uc = end($this->uc);
 
             while ($uc > 0) {
-                $this->GetChar();
+                $this->getChar();
                 // If the replacement character is encoded as
                 // hexadecimal value \'hh then jump over it
                 if ($this->char == "\\" && $this->rtf[$this->pos] == '\'') {
@@ -224,15 +224,15 @@ class Document
         array_push($this->group->children, $rtfword);
     }
 
-    protected function ParseControlSymbol()
+    protected function parseControlSymbol()
     {
         // Read symbol (one character only).
-        $this->GetChar();
+        $this->getChar();
         $symbol = $this->char;
 
-        // Exceptional case: 
+        // Exceptional case:
         // Treat EOL symbols as \par control word
-        if ($this->is_endofline()) {
+        if ($this->isEndOfLine()) {
             $rtfword = new ControlWord();
             $rtfword->word = 'par';
             $rtfword->parameter = 0;
@@ -245,9 +245,9 @@ class Document
         // followed by a 2-digit hex-code:
         $parameter = 0;
         if ($symbol == '\'') {
-            $this->GetChar();
+            $this->getChar();
             $parameter = $this->char;
-            $this->GetChar();
+            $this->getChar();
             $parameter = hexdec($parameter . $this->char);
         }
 
@@ -258,7 +258,7 @@ class Document
         array_push($this->group->children, $rtfsymbol);
     }
 
-    protected function ParseControl()
+    protected function parseControl()
     {
         // Beginning of an RTF control word or control symbol.
         // Look ahead by one character to see if it starts with
@@ -266,10 +266,10 @@ class Document
         $this->GetChar();
         $this->pos--; // (go back after look-ahead)
 
-        if ($this->is_letter()) {
-            $this->ParseControlWord();
+        if ($this->isLetter()) {
+            $this->parseControlWord();
         } else {
-            $this->ParseControlSymbol();
+            $this->parseControlSymbol();
         }
     }
 
@@ -283,14 +283,14 @@ class Document
         do {
             // Ignore EOL characters
             if ($this->char == "\r" || $this->char == "\n") {
-                $this->GetChar();
+                $this->getChar();
                 continue;
             }
             // Is this an escape?
             if ($this->char == "\\") {
                 // Perform lookahead to see if this
                 // is really an escape sequence.
-                $this->GetChar();
+                $this->getChar();
                 switch ($this->char) {
                 case "\\": break;
                 case '{': break;
@@ -309,7 +309,7 @@ class Document
             if (!$terminate) {
                 // Save plain text
                 $text .= $this->char;
-                $this->GetChar();
+                $this->getChar();
             }
         } while (!$terminate && $this->pos < $this->len);
 
@@ -329,7 +329,7 @@ class Document
     /**
      * Attempt to parse an RTF string.
      */
-    protected function Parse($rtf)
+    protected function parse($rtf)
     {
         $this->rtf = $rtf;
         $this->pos = 0;
@@ -339,7 +339,7 @@ class Document
 
         while ($this->pos < $this->len-1) {
             // Read next character:
-            $this->GetChar();
+            $this->getChar();
 
             // Ignore \r and \n
             if ($this->char == "\n" || $this->char == "\r") {
@@ -349,16 +349,16 @@ class Document
             // What type of character is this?
             switch ($this->char) {
             case '{':
-                $this->ParseStartGroup();
+                $this->parseStartGroup();
                 break;
             case '}':
-                $this->ParseEndGroup();
+                $this->parseEndGroup();
                 break;
             case "\\":
-                $this->ParseControl();
+                $this->parseControl();
                 break;
             default:
-                $this->ParseText();
+                $this->parseText();
                 break;
             }
         }

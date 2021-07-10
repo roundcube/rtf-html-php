@@ -27,18 +27,18 @@ class State
 
     public function __construct()
     {
-        $this->Reset();
+        $this->reset();
     }
 
     /*
      * Store a font in the font table at the specified index.
      */
-    public static function SetFont($index, Font $font)
+    public static function setFont($index, Font $font)
     {
         State::$fonttbl[$index] = $font;
     }
 
-    public function Reset($defaultFont = null)
+    public function reset($defaultFont = null)
     {
         $this->bold = false;
         $this->italic = false;
@@ -53,7 +53,7 @@ class State
         $this->htmlrtf = false;
     }
 
-    public function PrintStyle()
+    public function printStyle()
     {
         $style = array();
 

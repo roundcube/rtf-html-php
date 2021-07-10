@@ -32,7 +32,7 @@ class HtmlFormatter
         $this->encoding = $encoding;
     }
 
-    public function Format(Document $document)
+    public function format(Document $document)
     {
         // Clear current output
         $this->output = '';
@@ -51,7 +51,7 @@ class HtmlFormatter
         $this->openedTags = array('span' => false, 'p' => null);
 
         // Begin format
-        $this->ProcessGroup($document->root);
+        $this->processGroup($document->root);
 
         // Instead of removing opened tags, we close them
         $this->output .= $this->openedTags['span'] ? '</span>' : '';
@@ -64,7 +64,7 @@ class HtmlFormatter
         return $this->output;
     }
 
-    protected function LoadFont(\RtfHtmlPhp\Group $fontGroup)
+    protected function loadFont(\RtfHtmlPhp\Group $fontGroup)
     {
         $fontNumber = 0;
         $font = new Font();
@@ -92,10 +92,10 @@ class HtmlFormatter
                 // case 'fbidi': break; // bidirectional font
 
                 case 'fcharset': // charset
-                    $font->charset = $this->GetEncodingFromCharset($child->parameter);
+                    $font->charset = $this->getEncodingFromCharset($child->parameter);
                     break;
                 case 'cpg': // code page
-                    $font->codepage = $this->GetEncodingFromCodepage($child->parameter);
+                    $font->codepage = $this->getEncodingFromCodepage($child->parameter);
                     break;
                 case 'fprq': // Font pitch
                     $font->fprq = $child->parameter;
@@ -125,10 +125,10 @@ class HtmlFormatter
             */
         }
 
-        State::SetFont($fontNumber, $font);
+        State::setFont($fontNumber, $font);
     }
 
-    protected function ExtractFontTable($fontTblGrp)
+    protected function extractFontTable($fontTblGrp)
     {
         // {' \fonttbl (<fontinfo> | ('{' <fontinfo> '}'))+ '}'
         // <fontnum><fontfamily><fcharset>?<fprq>?<panose>?
@@ -148,7 +148,7 @@ class HtmlFormatter
         }
     }
 
-    protected function ExtractColorTable($colorTblGrp)
+    protected function extractColorTable($colorTblGrp)
     {
         // {\colortbl;\red0\green0\blue0;}
         // Index 0 of the RTF color table  is the 'auto' color
@@ -179,7 +179,7 @@ class HtmlFormatter
         State::$colortbl = $colortbl;
     }
 
-    protected function ExtractImage($pictGrp)
+    protected function extractImage($pictGrp)
     {
         $Image = new Image();
         foreach ($pictGrp as $child) {
@@ -207,24 +207,24 @@ class HtmlFormatter
                 }
             } elseif ($child instanceof \RtfHtmlPhp\Text) {
                 // store Data
-                $Image->ImageData = $child->text;
+                $Image->imageData = $child->text;
             }
         }
 
         // output Image
-        $this->output .= $Image->PrintImage();
+        $this->output .= $Image->printImage();
         unset($Image);
     }
 
-    protected function ProcessGroup($group)
+    protected function processGroup($group)
     {
         // Special group processing:
-        switch ($group->GetType()) {
+        switch ($group->getType()) {
         case "fonttbl": // Extract font table
-            $this->ExtractFontTable($group);
+            $this->extractFontTable($group);
             return;
         case "colortbl": // Extract color table
-            $this->ExtractColorTable($group->children);
+            $this->extractColorTable($group->children);
             return;
         case "stylesheet":
             // Stylesheet extraction not yet supported
@@ -233,13 +233,13 @@ class HtmlFormatter
             // Ignore Document information
             return;
         case "pict":
-            $this->ExtractImage($group->children);
+            $this->extractImage($group->children);
             return;
         case "nonshppict":
             // Ignore alternative images
             return;
         case "*": // Process destination
-            $this->ProcessDestination($group->children);
+            $this->processDestination($group->children);
             return;
         }
 
@@ -251,7 +251,7 @@ class HtmlFormatter
         array_push($this->states, $this->state);
 
         foreach ($group->children as $child) {
-            $this->FormatEntry($child);
+            $this->formatEntry($child);
         }
 
         // Pop state from stack
@@ -259,7 +259,7 @@ class HtmlFormatter
         $this->state = $this->states[sizeof($this->states) - 1];
     }
 
-    protected function ProcessDestination($dest)
+    protected function processDestination($dest)
     {
         if (!$dest[1] instanceof \RtfHtmlPhp\ControlWord) {
             return;
@@ -269,7 +269,7 @@ class HtmlFormatter
         if ($dest[1]->word == "shppict") {
             $c = count($dest);
             for ($i = 2; $i < $c; $i++) {
-                $this->FormatEntry($dest[$i]);
+                $this->formatEntry($dest[$i]);
             }
         } elseif ($dest[1]->word == "htmltag") {
             $c = count($dest);
@@ -278,31 +278,27 @@ class HtmlFormatter
 
                 if ($entry instanceof \RtfHtmlPhp\Text) {
                     $this->output .= $entry->text;
-                } elseif ($entry instanceof \RtfHtmlPhp\Group) {
-                    $this->ProcessGroup($entry);
-                } elseif ($entry instanceof \RtfHtmlPhp\ControlSymbol) {
-                    $this->FormatControlSymbol($entry);
-                } elseif ($entry instanceof \RtfHtmlPhp\ControlWord) {
-                    $this->FormatControlWord($entry);
+                } else {
+                    $this->formatEntry($entry);
                 }
             }
         }
     }
 
-    protected function FormatEntry($entry)
+    protected function formatEntry($entry)
     {
         if ($entry instanceof \RtfHtmlPhp\Group) {
-            $this->ProcessGroup($entry);
+            $this->processGroup($entry);
         } elseif ($entry instanceof \RtfHtmlPhp\ControlWord) {
-            $this->FormatControlWord($entry);
+            $this->formatControlWord($entry);
         } elseif ($entry instanceof \RtfHtmlPhp\ControlSymbol) {
-            $this->FormatControlSymbol($entry);
+            $this->formatControlSymbol($entry);
         } elseif ($entry instanceof \RtfHtmlPhp\Text) {
-            $this->FormatText($entry);
+            $this->formatText($entry);
         }
     }
 
-    protected function FormatControlWord($word)
+    protected function formatControlWord($word)
     {
         switch($word->word) {
 
@@ -316,7 +312,7 @@ class HtmlFormatter
 
         case 'plain': // Reset font formatting properties to default.
         case 'pard':  // Reset to default paragraph properties.
-            $this->state->Reset($this->defaultFont);
+            $this->state->reset($this->defaultFont);
             break;
 
         // Font formatting properties:
@@ -365,23 +361,23 @@ class HtmlFormatter
 
         // Special characters
 
-        case 'lquote':    $this->Write($this->fromhtml ? "‘" : "&lsquo;"); break;  // &#145; &#8216;
-        case 'rquote':    $this->Write($this->fromhtml ? "’" : "&rsquo;"); break;  // &#146; &#8217;
-        case 'ldblquote': $this->Write($this->fromhtml ? "“" : "&ldquo;"); break;  // &#147; &#8220;
-        case 'rdblquote': $this->Write($this->fromhtml ? "”" : "&rdquo;"); break;  // &#148; &#8221;
-        case 'bullet':    $this->Write($this->fromhtml ? "•" : "&bull;");  break;  // &#149; &#8226;
-        case 'endash':    $this->Write($this->fromhtml ? "–" : "&ndash;"); break;  // &#150; &#8211;
-        case 'emdash':    $this->Write($this->fromhtml ? "—" : "&mdash;"); break;  // &#151; &#8212;
-        case 'enspace':   $this->Write($this->fromhtml ? " " : "&ensp;");  break;  // &#8194;
-        case 'emspace':   $this->Write($this->fromhtml ? " " : "&emsp;");  break;  // &#8195;
-        case 'tab':       $this->Write($this->fromhtml ? "\t" : "&nbsp;");  break;  // Character value 9
+        case 'lquote':    $this->write($this->fromhtml ? "‘" : "&lsquo;"); break;  // &#145; &#8216;
+        case 'rquote':    $this->write($this->fromhtml ? "’" : "&rsquo;"); break;  // &#146; &#8217;
+        case 'ldblquote': $this->write($this->fromhtml ? "“" : "&ldquo;"); break;  // &#147; &#8220;
+        case 'rdblquote': $this->write($this->fromhtml ? "”" : "&rdquo;"); break;  // &#148; &#8221;
+        case 'bullet':    $this->write($this->fromhtml ? "•" : "&bull;");  break;  // &#149; &#8226;
+        case 'endash':    $this->write($this->fromhtml ? "–" : "&ndash;"); break;  // &#150; &#8211;
+        case 'emdash':    $this->write($this->fromhtml ? "—" : "&mdash;"); break;  // &#151; &#8212;
+        case 'enspace':   $this->write($this->fromhtml ? " " : "&ensp;");  break;  // &#8194;
+        case 'emspace':   $this->write($this->fromhtml ? " " : "&emsp;");  break;  // &#8195;
+        case 'tab':       $this->write($this->fromhtml ? "\t" : "&nbsp;");  break;  // Character value 9
         case 'line':      $this->output .= $this->fromhtml ? "\n" : "<br/>"; break; // character value (line feed = &#10;) (carriage return = &#13;)
 
         // Unicode characters
 
         case 'u':
-            $uchar = $this->DecodeUnicode($word->parameter);
-            $this->Write($uchar);
+            $uchar = $this->decodeUnicode($word->parameter);
+            $this->write($uchar);
             break;
 
         // Paragraphs
@@ -393,9 +389,9 @@ class HtmlFormatter
                 break;
             }
             // Close previously opened tags
-            $this->CloseTags();
+            $this->closeTags();
             // Begin a new paragraph
-            $this->OpenTag('p');
+            $this->openTag('p');
             break;
 
         // Code pages
@@ -404,17 +400,17 @@ class HtmlFormatter
         case 'mac':
         case 'pc':
         case 'pca':
-            $this->RTFencoding = $this->GetEncodingFromCodepage($word->word);
+            $this->rtfEncoding = $this->getEncodingFromCodepage($word->word);
             break;
         case 'ansicpg':
             if ($word->parameter) {
-                $this->RTFencoding = $this->GetEncodingFromCodepage($word->parameter);
+                $this->rtfEncoding = $this->getEncodingFromCodepage($word->parameter);
             }
             break;
         }
     }
 
-    protected function DecodeUnicode($code, $srcEnc = 'UTF-8')
+    protected function decodeUnicode($code, $srcEnc = 'UTF-8')
     {
         $utf8 = false;
 
@@ -423,7 +419,7 @@ class HtmlFormatter
         }
 
         if ($this->encoding == 'HTML-ENTITIES') {
-            return $utf8 !== false ? "&#{$this->ord_utf8($utf8)};" : "&#{$code};";
+            return $utf8 !== false ? "&#{$this->ordUtf8($utf8)};" : "&#{$code};";
         }
 
         if ($this->encoding == 'UTF-8') {
@@ -434,7 +430,7 @@ class HtmlFormatter
             mb_convert_encoding("&#{$code};", $this->encoding, 'HTML-ENTITIES');
     }
 
-    protected function Write($txt)
+    protected function write($txt)
     {
         // Ignore regions that are not part of the original (encapsulated) HTML content
         if ($this->state->htmlrtf) {
@@ -448,7 +444,7 @@ class HtmlFormatter
 
         if ($this->openedTags['p'] === null) {
             // Create the first paragraph
-            $this->OpenTag('p');
+            $this->openTag('p');
         }
 
         // Create a new 'span' element only when a style change occurs.
@@ -459,22 +455,22 @@ class HtmlFormatter
             || ($this->state->equals($this->previousState) && !$this->openedTags['span'])
         ) {
             // If applicable close previously opened 'span' tag
-            $this->CloseTag('span');
+            $this->closeTag('span');
 
-            $style = $this->state->PrintStyle();
+            $style = $this->state->printStyle();
 
             // Keep track of preceding style
             $this->previousState = clone $this->state;
 
             // Create style attribute and open span
             $attr = $style ? "style=\"{$style}\"" : "";
-            $this->OpenTag('span', $attr);
+            $this->openTag('span', $attr);
         }
 
         $this->output .= $txt;
     }
 
-    protected function OpenTag($tag, $attr = '')
+    protected function openTag($tag, $attr = '')
     {
         // Ignore regions that are not part of the original (encapsulated) HTML content
         if ($this->fromhtml) {
@@ -485,7 +481,7 @@ class HtmlFormatter
         $this->openedTags[$tag] = true;
     }
 
-    protected function CloseTag($tag)
+    protected function closeTag($tag)
     {
         if ($this->fromhtml) {
             return;
@@ -510,43 +506,46 @@ class HtmlFormatter
         }
     }
 
-    protected function CloseTags()
+    /**
+     * Closes all opened tags
+     */
+    protected function closeTags()
     {
         // Close all opened tags
         foreach ($this->openedTags as $tag => $b) {
-            $this->CloseTag($tag);
+            $this->closeTag($tag);
         }
     }
 
-    protected function FormatControlSymbol($symbol)
+    protected function formatControlSymbol($symbol)
     {
         if ($symbol->symbol == '\'') {
-            $enc = $this->GetSourceEncoding();
-            $uchar = $this->DecodeUnicode($symbol->parameter, $enc);
-            $this->Write($uchar);
+            $enc = $this->getSourceEncoding();
+            $uchar = $this->decodeUnicode($symbol->parameter, $enc);
+            $this->write($uchar);
         } elseif ($symbol->symbol == '~') {
-            $this->Write("&nbsp;"); // Non breaking space
+            $this->write("&nbsp;"); // Non breaking space
         } elseif ($symbol->symbol == '-') {
-            $this->Write("&#173;"); // Optional hyphen
+            $this->write("&#173;"); // Optional hyphen
         } elseif ($symbol->symbol == '_') {
-            $this->Write("&#8209;"); // Non breaking hyphen
+            $this->write("&#8209;"); // Non breaking hyphen
         } elseif ($symbol->symbol == '{') {
-            $this->Write("{"); // Non breaking hyphen
+            $this->write("{"); // Non breaking hyphen
         }
     }
 
-    protected function FormatText($text)
+    protected function formatText($text)
     {
         // Convert special characters to HTML entities
         $txt = htmlspecialchars($text->text, ENT_NOQUOTES, 'UTF-8');
         if ($this->encoding == 'HTML-ENTITIES') {
-            $this->Write($txt);
+            $this->write($txt);
         } else {
-            $this->Write(mb_convert_encoding($txt, $this->encoding, 'UTF-8'));
+            $this->write(mb_convert_encoding($txt, $this->encoding, 'UTF-8'));
         }
     }
 
-    protected function GetSourceEncoding()
+    protected function getSourceEncoding()
     {
         if (isset($this->state->font)) {
             if (isset(State::$fonttbl[$this->state->font]->codepage)) {
@@ -557,10 +556,10 @@ class HtmlFormatter
             }
         }
 
-        return $this->RTFencoding;
+        return $this->rtfEncoding;
     }
 
-    protected function GetEncodingFromCharset($fcharset)
+    protected function getEncodingFromCharset($fcharset)
     {
         // maps windows character sets to iconv encoding names
         $charset = array (
@@ -595,7 +594,7 @@ class HtmlFormatter
         }
     }
 
-    protected function GetEncodingFromCodepage($cpg)
+    protected function getEncodingFromCodepage($cpg)
     {
         $codePage = array (
             'ansi' => 'CP1252',
@@ -641,7 +640,7 @@ class HtmlFormatter
         }
     }
 
-    protected function ord_utf8($chr)
+    protected function ordUtf8($chr)
     {
         $ord0 = ord($chr);
         if ($ord0 >= 0 && $ord0 <= 127) {

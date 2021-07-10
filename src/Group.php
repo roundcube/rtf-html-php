@@ -16,7 +16,7 @@ class Group extends Element
         $this->children = array();
     }
 
-    public function GetType()
+    public function getType()
     {
         // No children? Then the group type is null.
         if (sizeof($this->children) == 0) {
@@ -46,7 +46,7 @@ class Group extends Element
      * If a group contains a '*' symbol as its first child,
      * then it is a destination group.
      */
-    public function IsDestination()
+    public function isDestination()
     {
         // If group has no children, then destination is null.
         if (sizeof($this->children) == 0) {
