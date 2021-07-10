@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0
+
+- Fork, various code style fixes, camel-case use
+- Added some more tests
+- Removed trigger_error() use
+- Added support for encapsulated HTML
+- Support PHP >= 5.5, up to 8.1
+
 ## 1.1
 
 ### Update 11 Sep '19:

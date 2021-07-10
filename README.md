@@ -17,7 +17,7 @@ $rtf = file_get_contents("test.rtf");
 $document = new Document($rtf); // or use a string directly
 ```
 
-`Document` will raise an exception if the RTF document could not be parsed. Parse errors will generate PHP notices.
+`Document` will raise an exception if the RTF document could not be parsed.
 
 If you’d like to see what the parser read (for debug purposes), then call this:
 
@@ -42,10 +42,5 @@ $formatter = new HtmlFormatter('UTF-8');
 ## Install via Composer
 
 ```shell
-composer require henck/rtf-to-html
+composer require roundcube/rtf-to-html
 ```
-
-## Caveats
-
-* Please note that rtf-html-php requires your PHP installation to support the `mb_convert_encoding` function. Therefore you must have the `php-mbstring` module installed. For fresh PHP installations, it will usually be there.
-
