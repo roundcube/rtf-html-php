@@ -32,7 +32,7 @@ jobs:
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Fix PHPUnit for PHP8
-        run: composer remove phpstan/phpstan
+        run: composer remove phpstan/phpstan --dev --no-update
         if: matrix.php < 7.1
 
       - name: Install dependencies
