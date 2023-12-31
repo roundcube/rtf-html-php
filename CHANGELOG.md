@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.1
+## 2.2
 
 - Fix "Creation of dynamic property" warnings
 - Fix a couple of code errors found in static code analisys
