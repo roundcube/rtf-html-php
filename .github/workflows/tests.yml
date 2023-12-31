@@ -31,6 +31,10 @@ jobs:
       - name: Setup problem matchers
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
+      - name: Fix PHPUnit for PHP8
+        run: composer remove phpstan/phpstan
+        if: matrix.php < 7.1
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
